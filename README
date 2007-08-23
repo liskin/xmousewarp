@@ -1,0 +1,10 @@
+This program is intended to workaround the Intel driver's screen size
+limitation:
+  * use vertical xinerama layout (two 1280x1024 screens, for example)
+  * $ xmousewarp H <left screen num> <right screen num>
+  * use your mouse as if the screens were aligned horizontally
+
+
+Requirements:
+    http://hackage.haskell.org/cgi-bin/hackage-scripts/package/X11
+    http://hackage.haskell.org/cgi-bin/hackage-scripts/package/X11-extras
