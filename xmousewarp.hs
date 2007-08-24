@@ -138,15 +138,19 @@ parseOrientation "V" = Just Vertical
 parseOrientation "v" = Just Vertical
 parseOrientation _ = Nothing
 
+safeSize = 200
+
 -- Screen rectangle => Edge rectangle convertors:
-leftEdge rect = rect { rect_width = 1 }
-topEdge rect = rect { rect_height = 1 }
+leftEdge rect = rect { rect_width = safeSize,
+    rect_x = (rect_x rect) - fromIntegral safeSize + 1 }
+topEdge rect = rect { rect_height = safeSize,
+    rect_y = (rect_y rect) - fromIntegral safeSize + 1}
 rightEdge rect = rect {
     rect_x = (rect_x rect + fromIntegral (rect_width rect) - 1),
-    rect_width = 1 }
+    rect_width = safeSize }
 bottomEdge rect = rect {
     rect_y = (rect_y rect + fromIntegral (rect_height rect) - 1),
-    rect_height = 1 }
+    rect_height = safeSize }
 
 -- Operations for screens and a particular orientation:
 s1op Horizontal = rightEdge
