@@ -24,6 +24,7 @@
 
 
 import System
+import System.Mem
 import System.Exit (exitWith, ExitCode(..))
 import Data.Bits
 import Data.Maybe
@@ -65,7 +66,9 @@ main = do
     sync dpy False
 
     -- go!
-    eventLoop dpy (theOtherOne win1 win2) or
+    forever $ do
+	eventLoop dpy (theOtherOne win1 win2) or
+	performGC
 
     where -- | Return the other window.
 	  theOtherOne win1 win2 w = case w of
@@ -82,7 +85,6 @@ eventLoop dpy too or = do
 		 myWarpPointer dpy (too $ ev_window ev)
 		    (x $ ev_x ev) (y $ ev_y ev)
 	     _ -> return ()
-	eventLoop dpy too or
     where (x, y) = case or of
 			Horizontal -> (const 0, id)
 			Vertical   -> (id, const 0)
@@ -169,3 +171,6 @@ maybeRead :: (Read a) => String -> Maybe a
 maybeRead s = case reads s of
 		   [(x, "")] -> Just x
 		   _ -> Nothing
+
+-- | Perform a given action forever.
+forever x = x >> forever x
