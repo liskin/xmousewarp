@@ -121,14 +121,10 @@ mkUnmanagedWindow dpy scr rect = do
 -- destination.
 myWarpPointer dpy w x y = do
     warpPointer dpy none w 0 0 0 0 (fromIntegral x) (fromIntegral y)
-    wait
-    where wait = do
-	      allocaXEvent $ \e -> do
-		  nextEvent dpy e
-		  ev <- getEvent e
-		  if ev_window ev == w
-		     then return ()
-		     else wait
+    whileTrue $ allocaXEvent $ \e -> do
+	nextEvent dpy e
+	ev <- getEvent e
+	return $ ev_window ev /= w
 
 -- | Orientation datatype.
 data Orientation = Horizontal | Vertical deriving (Eq, Read, Show)
@@ -173,4 +169,13 @@ maybeRead s = case reads s of
 		   _ -> Nothing
 
 -- | Perform a given action forever.
+forever   :: (Monad m) => m a -> m b
 forever x = x >> forever x
+
+-- | Perform a given action repeatedly as long as it returns True.
+whileTrue   :: (Monad m) => m Bool -> m ()
+whileTrue x = do
+    ret <- x
+    if ret
+       then whileTrue x
+       else return ()
